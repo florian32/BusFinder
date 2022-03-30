@@ -19,14 +19,22 @@ def find_bus():
     all_times = [i.text for i in all_times]
     arrival_times = []
     ending_times = []
+
     for i in range(0, len(all_times), 2):
         arrival_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
 
     for i in range(1, len(all_times), 2):
         ending_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
 
-    print(ending_times[1])
-
+    counter = 0
+    for ending_time in ending_times:
+        if (today_hours[0] - ending_time).days == 0 and SAFETY_MARGIN <= (
+                today_hours[0] - ending_time).seconds / 60 <= 20:
+            print(ending_time)
+            break
+        counter += 1
+    print(f"starting time of the bus is {arrival_times[counter].hour}:{arrival_times[counter].minute}, arrival time "
+          f"of the bus is {ending_times[counter].hour}:{ending_times[counter].minute}")
 
 def input_hour(time_object):
     time.sleep(0.25)
@@ -76,7 +84,7 @@ for x in working_hours[today]:
     hour = dt.datetime.strptime(x, '%H:%M')
     today_hours.append(hour)
 
-today_hours[0] -= dt.timedelta(minutes=TRAVEL_TIME)
+bus_starting_hour = today_hours[0] - dt.timedelta(minutes=TRAVEL_TIME)
 
 service = Service("C:\Development\chromedriver.exe")
 driver = webdriver.Chrome(service=service)
@@ -84,7 +92,7 @@ driver.get("https://jakdojade.pl/krakow/trasa/")
 
 cookies()
 input_location()
-input_hour(today_hours[0])
+input_hour(bus_starting_hour)
 
 # /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[1]/div[1]/div[2]/div[2]/div[2]/div[2]/span[1]
 # /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div[2]/span[1]
