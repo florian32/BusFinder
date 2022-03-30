@@ -14,6 +14,12 @@ def cookies():
     time.sleep(2)
 
 
+def find_bus():
+    arrival_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
+    arrival_times = [i.text for i in arrival_times]
+    print(arrival_times)
+
+
 def input_hour(time_object):
     time.sleep(0.25)
     hour_input = driver.find_element(By.XPATH,
@@ -27,9 +33,11 @@ def input_hour(time_object):
                                         '2]/timepicker/div/table/tbody/tr/td[4]/input')
 
     minutes_input.send_keys(time_object.minute)
-    button = driver.find_element(By.XPATH,'/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[2]/div['
-                                          '2]/button[2]/div[2]')
+    button = driver.find_element(By.XPATH, '/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[2]/div['
+                                           '2]/button[2]/div[2]')
     button.click()
+    time.sleep(2)
+    find_bus()
 
 
 def input_location():
@@ -69,3 +77,7 @@ driver.get("https://jakdojade.pl/krakow/trasa/")
 cookies()
 input_location()
 input_hour(today_hours[0])
+
+# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[1]/div[1]/div[2]/div[2]/div[2]/div[2]/span[1]
+# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div[2]/span[1]
+# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[3]/div/div[2]/div[2]/div[1]/div[2]/span
