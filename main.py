@@ -14,7 +14,7 @@ def cookies():
     time.sleep(2)
 
 
-def find_bus():
+def find_first_bus():
     all_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
     all_times = [i.text for i in all_times]
     arrival_times = []
@@ -30,11 +30,30 @@ def find_bus():
     for ending_time in ending_times:
         if (today_hours[0] - ending_time).days == 0 and SAFETY_MARGIN <= (
                 today_hours[0] - ending_time).seconds / 60 <= 20:
-            print(ending_time)
             break
         counter += 1
     print(f"starting time of the bus is {arrival_times[counter].hour}:{arrival_times[counter].minute}, arrival time "
           f"of the bus is {ending_times[counter].hour}:{ending_times[counter].minute}")
+    find_second_bus()
+
+
+def find_second_bus():
+    driver.back()
+    input_location(LAST_STOP, FIRST_STOP)
+    input_hour(today_hours[1])
+
+    all_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
+    all_times = [i.text for i in all_times]
+    starting_times = []
+    for i in range(0, len(all_times), 2):
+        starting_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
+
+    for starting_time in starting_times:
+        if (starting_time - today_hours[1]).seconds / 60 > 4:
+            print(
+                f"starting time of the bus is {starting_times[0].hour}:{starting_times[0].minute} or {starting_time.hour}:{starting_time.minute}")
+            break
+
 
 def input_hour(time_object):
     time.sleep(0.25)
@@ -53,19 +72,18 @@ def input_hour(time_object):
                                            '2]/button[2]/div[2]')
     button.click()
     time.sleep(2)
-    find_bus()
 
 
-def input_location():
+def input_location(first, last):
     starting_input = driver.find_element(By.XPATH,
                                          '/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[1]/div['
                                          '1]/div[2]/form/strong/input')
-    starting_input.send_keys('torfowa')
+    starting_input.send_keys(first)
     starting_input.send_keys(Keys.ENTER)
     endpoint_input = driver.find_element(By.XPATH,
                                          '/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[1]/div['
                                          '2]/div[2]/form/strong/input')
-    endpoint_input.send_keys('czarnowiejska')
+    endpoint_input.send_keys(last)
     endpoint_input.send_keys(Keys.ENTER)
     time.sleep(1)
 
@@ -74,6 +92,8 @@ def input_location():
 SAFETY_MARGIN = 10
 # HOW MANY MINUTES DOES IT TAKE TO TRAVEL
 TRAVEL_TIME = 40
+FIRST_STOP = 'torfowa'
+LAST_STOP = 'czarnowiejska'
 
 working_hours = [("11:15", "12:45"), ("11:30", "16:30"), ("8:00", "11:15"), ("16:45", "20:30")]
 
@@ -91,8 +111,9 @@ driver = webdriver.Chrome(service=service)
 driver.get("https://jakdojade.pl/krakow/trasa/")
 
 cookies()
-input_location()
+input_location(FIRST_STOP, LAST_STOP)
 input_hour(bus_starting_hour)
+find_first_bus()
 
 # /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[1]/div[1]/div[2]/div[2]/div[2]/div[2]/span[1]
 # /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div[2]/span[1]
