@@ -14,19 +14,19 @@ def cookies():
     time.sleep(2)
 
 
-def input_hour(time_table):
+def input_hour(time_object):
     time.sleep(0.25)
     hour_input = driver.find_element(By.XPATH,
                                      '/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[2]/div[1]/div['
                                      '2]/timepicker/div/table/tbody/tr/td[2]/input')
     hour_input.click()
-    hour_input.send_keys(time_table[0][0])
+    hour_input.send_keys(time_object.hour)
 
     minutes_input = driver.find_element(By.XPATH,
                                         '/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[2]/div[1]/div['
                                         '2]/timepicker/div/table/tbody/tr/td[4]/input')
 
-    minutes_input.send_keys(time_table[0][1])
+    minutes_input.send_keys(time_object.minute)
     button = driver.find_element(By.XPATH,'/html/body/div[2]/main/div/ui-view/div/article/div[1]/div/div[2]/div['
                                           '2]/button[2]/div[2]')
     button.click()
@@ -57,28 +57,15 @@ today = dt.datetime.today().weekday()
 today_hours = []
 
 for x in working_hours[today]:
-    hour = x.split(":")
-    hour = [int(x) for x in hour]
+    hour = dt.datetime.strptime(x, '%H:%M')
     today_hours.append(hour)
-print(today_hours[0])
 
+today_hours[0] -= dt.timedelta(minutes=TRAVEL_TIME)
 
-today_hours[0][1] -= TRAVEL_TIME
-print(today_hours[0])
+service = Service("C:\Development\chromedriver.exe")
+driver = webdriver.Chrome(service=service)
+driver.get("https://jakdojade.pl/krakow/trasa/")
 
-
-
-
-
-
-
-
-
-
-# service = Service("C:\Development\chromedriver.exe")
-# driver = webdriver.Chrome(service=service)
-# driver.get("https://jakdojade.pl/krakow/trasa/")
-#
-# cookies()
-# input_location()
-# input_hour(today_hours)
+cookies()
+input_location()
+input_hour(today_hours[0])
