@@ -15,9 +15,17 @@ def cookies():
 
 
 def find_bus():
-    arrival_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
-    arrival_times = [i.text for i in arrival_times]
-    print(arrival_times)
+    all_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
+    all_times = [i.text for i in all_times]
+    arrival_times = []
+    ending_times = []
+    for i in range(0, len(all_times), 2):
+        arrival_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
+
+    for i in range(1, len(all_times), 2):
+        ending_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
+
+    print(ending_times[1])
 
 
 def input_hour(time_object):
