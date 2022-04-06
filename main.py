@@ -19,6 +19,7 @@ def find_first_bus():
     global FIRST_BUS
     all_times = driver.find_elements(By.CSS_SELECTOR, '.cn-time-container')
     all_times = [i.text for i in all_times]
+    print(all_times)
     arrival_times = []
     ending_times = []
 
@@ -29,7 +30,9 @@ def find_first_bus():
         ending_times.append(dt.datetime.strptime(all_times[i], '%H:%M'))
 
     counter = 0
+
     for ending_time in ending_times:
+
         if (today_hours[0] - ending_time).days == 0 and SAFETY_MARGIN <= (
                 today_hours[0] - ending_time).seconds / 60 <= 20:
             break
@@ -97,7 +100,7 @@ def input_location(first, last):
 
 
 # HOW MANY MINUTES EARLIER SHOULD YOU BE AT WORK
-SAFETY_MARGIN = 10
+SAFETY_MARGIN = 7
 # HOW MANY MINUTES DOES IT TAKE TO TRAVEL
 TRAVEL_TIME = 40
 FIRST_STOP = 'torfowa'
@@ -105,10 +108,10 @@ LAST_STOP = 'czarnowiejska'
 FIRST_BUS = 0
 LAST_BUS = 0
 
-account_sid = 'ACf0b51290381ecfff55ad5b92c0143f96'
-auth_token = 'ed6bf392d62d510276ca6a758b844ec2'
+account_sid = ''
+auth_token = ''
 
-working_hours = [("11:15", "12:45"), ("11:30", "16:30"), ("8:00", "11:15"), ("16:45", "20:30")]
+working_hours = [("11:15", "12:45"), ("11:30", "16:30"), ("8:00", "11:15"), ("16:45", "20:30"), ("16:45", "20:30")]
 
 today = dt.datetime.today().weekday()
 today_hours = []
@@ -127,11 +130,6 @@ cookies()
 input_location(FIRST_STOP, LAST_STOP)
 input_hour(bus_starting_hour)
 find_first_bus()
-
-# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[1]/div[1]/div[2]/div[2]/div[2]/div[2]/span[1]
-# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div[2]/span[1]
-# /html/body/div[2]/main/div/ui-view/div/article/div[3]/div/div[2]/div/div[1]/div[3]/div/div[2]/div[2]/div[1]/div[2]/span
-
 
 client = Client(account_sid, auth_token)
 
